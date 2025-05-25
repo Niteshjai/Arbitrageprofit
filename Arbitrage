@@ -1,0 +1,50 @@
+import numpy as np
+import pandas as pd
+import requests
+
+from tvDatafeed import TvDatafeed, Interval
+
+username = 'Niteshjai'
+password = 'Niteshjaiswal1234'
+
+tv = TvDatafeed(username, password)
+
+def get_usd_to_ars_rate_fastforex(api_key):
+    url = f'https://api.fastforex.io/fetch-one?from=USD&to=ARS&api_key={api_key}'
+    response = requests.get(url)
+    data = response.json()
+
+    if response.status_code == 200 and 'result' in data:
+        rate = data['result']['ARS']
+        return rate
+    else:
+        raise Exception(f"API error or no data: {data}")
+
+
+def arbitrage(api_key):
+    # Correct ticker and exchange codes
+    ticker_us = 'AAPL'        # NASDAQ
+    exchange_us = 'NASDAQ'
+
+    ticker_ar = 'AAPLB'        # CEDEAR on BCBA (BYMA)
+    exchange_ar = 'BCBA'      # TradingView uses 'BCBA' for Argentina
+
+    data1 = tv.get_hist(symbol=ticker_us, exchange=exchange_us, interval=Interval.in_daily, n_bars=1000)['close']
+    data2 = tv.get_hist(symbol=ticker_ar, exchange=exchange_ar, interval=Interval.in_daily, n_bars=1000)['close']
+
+
+    data=pd.DataFrame({'NASDAQ':data1,'BYMAA':data1})
+    data.dropna()
+
+    rate = get_usd_to_ars_rate_fastforex(api_key)
+    ratio=1/20
+
+    data['fair_cedear']=(data['NASDAQ']*rate)*ratio
+    data['arbitrage']=data['BYMAA']-data['fair_cedear']
+    print(data)
+    profit=data['arbitrage'].sum()
+    return profit
+
+api_key = '55614ff050-9418ead798-swtxrx'
+ticker='AAPL'
+print(arbitrage(api_key))
