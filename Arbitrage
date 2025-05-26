@@ -85,7 +85,7 @@ class arbitrage():
         return total_profit, self.cash, self.shares_held
 
 # Usage
-api_key = '55614ff050-9418ead798-swtxrx'
+api_key = 'YOUR API_KEY'
 stocks  = 100
 arb_strat = arbitrage(api_key, stocks)
 profit, final_cash, shares_held = arb_strat.profit()
