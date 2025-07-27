@@ -1,43 +1,97 @@
-# Arbitrage Trading Strategy
 
-This project implements an arbitrage trading strategy between the NASDAQ and the Buenos Aires Stock Exchange (BYMA/BCBA) for the Apple Inc. (AAPL) stock.
+# Arbitrage Trading Strategy: NASDAQ vs CEDEARs
 
-## Installation
+This Python project simulates an arbitrage strategy between the NASDAQ (U.S. market) and BYMA/BCBA (Argentinian market) using CEDEARs for a foreign asset (e.g., AAPL). It leverages real-time forex data and historical price data from TradingView.
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/your-username/arbitrage-trading-strategy.git
-   ```
-2. Install the required dependencies:
-   ```
-   pip install numpy pandas requests tvDatafeed
-   ```
+---
 
-## Usage
+## 📌 Overview
 
-1. Obtain a FastForex API key from [FastForex](https://www.fastforex.io/) and replace `'55614ff050-9418ead798-swtxrx'` in the code with your own API key.
-2. Adjust the `stocks` variable to set the number of shares to simulate per trade.
-3. Run the `main.py` script:
-   ```
-   python main.py
-   ```
-4. The script will output the total profit, final cash, and total shares held after running the arbitrage strategy on historical data.
+CEDEARs are Argentine certificates representing foreign shares. Since each CEDEAR represents a fraction of a foreign stock, price discrepancies between the local (BYMA) and international (NASDAQ) markets can create arbitrage opportunities.
 
-## API
+This tool calculates and simulates profits from such opportunities based on the difference between the **actual CEDEAR price** and its **theoretical fair value**.
 
-The project uses the following APIs:
+---
 
-1. [TradingView API](https://www.tradingview.com/pine-script-docs/en/v4/index.html) to fetch historical stock prices for AAPL on the NASDAQ and BYMA/BCBA exchanges.
-2. [FastForex API](https://www.fastforex.io/) to fetch the real-time USD to ARS exchange rate.
+## 📂 Project Structure
 
-## Contributing
+```
+main.py          # Main script containing the Arbitrage class and simulation
+```
 
-Contributions are welcome! If you find any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
+---
 
-## License
+## ⚙️ How It Works
 
-This project is licensed under the [MIT License](LICENSE).
+- Retrieves historical price data for a stock (e.g., AAPL) from:
+  - NASDAQ (foreign market)
+  - BYMA/BCBA (Argentinian CEDEAR)
+- Fetches real-time USD to ARS exchange rate via FastForex API
+- Calculates **fair CEDEAR value** using:
+  
+  Fair CEDEAR Price = NASDAQ Price × USD/ARS Rate × CEDEAR Ratio
 
-## Testing
+- Simulates trades:
+  - **Positive Arbitrage:** Buy from NASDAQ and sell on BYMA
+  - **Negative Arbitrage:** Buy from BYMA and sell on NASDAQ
+- Outputs simulated profit, final cash, and remaining shares
 
-The project does not currently include any automated tests. However, you can manually test the functionality by running the `main.py` script and verifying the output.
+---
+
+## 🧪 Example Usage
+
+```python
+api_key = 'your_fastforex_api_key'
+stocks = 100
+
+arb_strat = arbitrage(api_key, stocks)
+profit, final_cash, shares_held = arb_strat.profit()
+
+print('Total_profit is', profit)
+print('Final_cash is', final_cash)
+print('Total_sharesheld is', shares_held)
+```
+
+---
+
+## 🔐 Security Warning
+
+- Do **NOT** hardcode credentials (`username`, `password`, `api_key`) directly in production code.
+- Use **environment variables** or a `.env` file with secure loading (e.g., via `python-dotenv`).
+
+---
+
+## 📦 Dependencies
+
+Install required packages via pip:
+
+```bash
+pip install pandas numpy requests tvDatafeed
+```
+
+---
+
+## 📈 Data Sources
+
+- 📊 **Stock Prices:** [tvDatafeed](https://github.com/StreamAlpha/tvdatafeed)
+- 💱 **Forex Rates:** [FastForex API](https://fastforex.io/)
+
+---
+
+## 📌 Notes
+
+- CEDEAR ratio (1/20) is hardcoded for AAPL. Adjust accordingly for other stocks.
+- Uses 1000 bars of daily historical data from TradingView.
+- Designed for educational/backtesting purposes; not intended for live trading without further development.
+
+---
+
+## 🧠 Author
+
+Nitesh Jaiswal — [LinkedIn](https://www.linkedin.com/in/nitesh-jaiswal)
+
+---
+
+## 📜 License
+
+This project is licensed for educational use. Modify freely for personal or academic purposes.
